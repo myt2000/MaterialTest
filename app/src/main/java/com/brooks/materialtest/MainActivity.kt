@@ -8,6 +8,7 @@ import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
     val fruits = mutableListOf(Fruit("Apple", R.drawable.apple),
@@ -47,6 +48,21 @@ class MainActivity : AppCompatActivity() {
             .setAction("Undo") {
                 Toast.makeText(this, "Data restored", Toast.LENGTH_SHORT).show()
             }.show()
+        }
+        swipeRefresh.setColorSchemeResources(R.color.colorPrimary)
+        swipeRefresh.setOnRefreshListener {
+            refreshFruits(adapter)
+        }
+    }
+
+    private fun refreshFruits(adapter: FruitAdapter) {
+        thread {
+            Thread.sleep(2000)
+            runOnUiThread {
+                initFruits()
+                adapter.notifyDataSetChanged()
+                swipeRefresh.isRefreshing = false
+            }
         }
     }
 
